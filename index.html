@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-image: url('https://wallpaperaccess.com/full/192672.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: optimizeQuality;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #2ecc71; /* Verde más fuerte */
+            margin-bottom: 20px;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .cell img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .cell.winner {
+            background-color: #2ecc71; /* Color de fondo para la línea ganadora */
+        }
+
+        .cell:hover {
+            background-color: #eee;
+        }
+
+        #message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #2ecc71; /* Verde más fuerte */
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px;
+            background-color: transparent; /* Hacer el fondo del botón transparente */
+            color: white;
+            border: 2px solid #2ecc71; /* Borde verde para resaltar el botón */
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #27ae60; /* Tono más oscuro al pasar el ratón */
+        }
+
+        /* Estilos para los botones de redes sociales */
+        #social-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-button {
+            width: 50px; /* Reducí el tamaño de los botones de redes sociales */
+            height: 50px;
+            cursor: pointer;
+            transition: filter 0.3s ease-in-out;
+        }
+
+        .social-button img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .social-button:hover {
+            filter: brightness(80%); /* Cambia el brillo al pasar el ratón */
+        }
+
+        #footer {
+            margin-top: 20px;
+            color: #2ecc71; /* Verde más fuerte */
+        }
+    </style>
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+
+<h1>Tic Tac Toe</h1>
+<div id="board"></div>
+<div id="message">Es turno de Jugador Sol</div>
+<button onclick="restartGame()">Reiniciar Juego</button>
+
+<!-- Contenedor de botones de redes sociales -->
+<div id="social-links">
+    <button class="social-button" onclick="window.open('https://www.facebook.com/geovanni212', '_blank')">
+        <img src="img/facebook.png" alt="Facebook">
+    </button>
+    <button class="social-button" onclick="window.open('https://www.instagram.com/ygeovannigl/', '_blank')">
+        <img src="img/instagram.png" alt="Instagram">
+    </button>
+    <button class="social-button" onclick="window.open('https://github.com/geovannigarcia95', '_blank')">
+        <img src="img/github.png" alt="GitHub">
+    </button>
+    <button class="social-button" onclick="window.open('https://twitter.com/PokerGeovanni', '_blank')">
+        <img src="img/twitter.png" alt="Twitter">
+    </button>
+    <button class="social-button" onclick="window.location.href='mailto:joshio.garcia86@outlook.com'">
+        <img src="img/outlook.png" alt="Outlook">
+    </button>
+    <button class="social-button" onclick="window.location.href='mailto:geovannipoker@gmail.com'">
+        <img src="img/gmail.png" alt="Gmail">
+    </button>
+</div>
+
+<div id="footer">
+    <p>Desarrollado por Yoshio Geovanni García López</p>
+</div>
+
+<script>
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+    let currentPlayer = 'Sol';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    // Create the Tic Tac Toe board
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleCellClick);
+        board.appendChild(cell);
+    }
+
+    function handleCellClick(event) {
+        const index = event.target.dataset.index;
+
+        if (gameBoard[index] === '' && gameActive) {
+            gameBoard[index] = currentPlayer;
+
+            // Crear una etiqueta de imagen y establecer la fuente de la imagen
+            const img = document.createElement('img');
+            img.src = currentPlayer === 'Sol' ? 'img/sol.gif' : 'img/luna.gif';  // Rutas locales a tus imágenes
+
+            // Limpiar el contenido y agregar la etiqueta de imagen
+            event.target.innerHTML = '';
+            event.target.appendChild(img);
+
+            if (checkWinner()) {
+                message.textContent = `Jugador ${currentPlayer} gana!`;
+                highlightWinnerCells();
+                gameActive = false;
+                alert(`¡Jugador ${currentPlayer} gana!`);
+            } else if (gameBoard.every(cell => cell !== '')) {
+                message.textContent = "Es un empate!";
+                gameActive = false;
+                alert("¡Es un empate!");
+            } else {
+                currentPlayer = currentPlayer === 'Sol' ? 'Luna' : 'Sol';
+                message.textContent = `Jugador ${currentPlayer}'s turno`;
+            }
+        }
+    }
+
+    function checkWinner() {
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        return winPatterns.some(pattern =>
+            pattern.every(index => gameBoard[index] === currentPlayer)
+        );
+    }
+
+    function highlightWinnerCells() {
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        for (const pattern of winPatterns) {
+            const [a, b, c] = pattern;
+            if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                document.getElementById(`cell_${a}`).classList.add('winner');
+                document.getElementById(`cell_${b}`).classList.add('winner');
+                document.getElementById(`cell_${c}`).classList.add('winner');
+                break;
+            }
+        }
+    }
+
+    function restartGame() {
+        // Restablecer variables y limpiar el tablero
+        currentPlayer = 'Sol';
+        gameBoard = ['', '', '', '', '', '', '', '', ''];
+        gameActive = true;
+
+        // Limpiar el tablero en el DOM
+        board.innerHTML = '';
+
+        // Volver a crear el tablero
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = `cell_${i}`;
+            cell.dataset.index = i;
+            cell.addEventListener('click', handleCellClick);
+            board.appendChild(cell);
+        }
+
+        // Restablecer mensaje
+        message.textContent = "Es turno de Jugador Sol";
+    }
+</script>
+
+</body>
+</html>
